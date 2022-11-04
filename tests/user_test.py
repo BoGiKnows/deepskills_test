@@ -1,26 +1,29 @@
 import requests
 import pytest
-import urllib
+import time
 from faker import Faker
+from selenium.webdriver.common.by import By
 
-
-# urllib.parse.quote_plus(user.result['name'])
 fake = Faker()
 
 
-def test_email(get_user_generator):
+def test_registration(get_user_generator, setup):
     user = get_user_generator
-    user.set_name(' sdf  ')
     visitor = {
         'name': user.result['name'],
         'phone': user.result['phone'],
         'email': user.result['email'],
     }
+    driver = setup
+    driver.find_element(By.XPATH, "//input[@placeholder='Ваше имя']").send_keys('Oleg')
+    driver.find_element(By.XPATH, "//input[@placeholder='Ваш e-mail']").send_keys(user.result['email'])
+    driver.find_element(By.XPATH, "//input[@placeholder='Ваш номер телефона']").send_keys(user.result['phone'])
+    driver.find_element(By.XPATH, "// button[text() = 'Далее']").click()
 
-    vis_req = requests.post('https://stage.deepskills.ru/api/v1/visitors', json=visitor)
-    user_req = requests.post('https://stage.deepskills.ru/auth', json=user.result)
-    print(user_req)
-    print(vis_req)
-    print(vis_req.json())
+
+
+
+
+
 
 
