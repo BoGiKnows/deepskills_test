@@ -10,41 +10,37 @@ class User(BuilderBaseClass):
 
     def __init__(self):
         super().__init__()
-        self.fake = Faker('ru_RU')
+        self.fake = Faker()
         self.reset()
 
-    def set_email(self, email='example@mail.ru'):
-        if not email:
+    def set_email(self, email=None):
+        if email is None:
             self.result['email'] = self.fake.email()
         else:
             self.result['email'] = email
         return self
 
-    def set_password(self, password=None):
-        if not password:
-            self.result['password'] = self.fake.password()
-        else:
-            self.result['password'] = password
+    def set_password(self, password='asDSAd4312432r*(0'):
+        self.result['password'] = password
         return self
 
     def set_password_confirmation(self, password_confirmation=None):
-        if not password_confirmation:
+        if password_confirmation is None:
             self.result['password_confirmation'] = self.result['password']
         else:
             self.result['password_confirmation'] = password_confirmation
         return self
 
     def set_name(self, name=None):
-        if not name:
+        if name is None:
             self.result['name'] = self.fake.first_name()
         else:
             self.result['name'] = name
+        return self
 
-    def set_phone(self, phone=None):
-        if not phone:
-            self.result['phone'] = self.fake.phone_number()
-        else:
-            self.result['phone'] = phone
+    def set_phone(self, phone='89183454565'):
+        self.result['phone'] = phone
+        return self
 
     def reset(self):
         self.set_password()
@@ -55,45 +51,4 @@ class User(BuilderBaseClass):
         return self
 
 
-class Visitor(BuilderBaseClass):
 
-    def __init__(self):
-        super().__init__()
-        self.fake = Faker('ru_RU')
-        self.reset()
-
-
-    def set_name(self, name=None):
-        if not name:
-            self.result['name'] = urllib.parse.quote_plus(self.fake.first_name())
-        else:
-            self.result['name'] = urllib.parse.quote_plus(name)
-
-    def set_email(self, email=None):
-        if not email:
-            self.result['email'] = self.fake.email()
-        else:
-            self.result['email'] = email
-        return self
-
-    def set_phone(self, phone=None):
-        if not phone:
-            self.result['phone'] = self.fake.phone_number()
-        else:
-            self.result['phone'] = phone
-
-    def reset(self):
-        self.set_name()
-        self.set_phone()
-        self.set_email()
-        return self
-
-    def __str__(self):
-        return f'Name: {self.result["name"]}\n' \
-               f'Email: {self.result["email"]}\n' \
-               f'Phone: {self.result["phone"]}'
-
-
-v = Visitor()
-v.reset().set_name('Олег')
-print(v.result)
