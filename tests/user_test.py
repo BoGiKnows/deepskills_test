@@ -19,7 +19,7 @@ def test_registration_selenium(get_user_generator, setup):
     driver.find_element(By.XPATH, "//input[@placeholder='Ваше имя']").send_keys('Oleg')
     driver.find_element(By.XPATH, "//input[@placeholder='Ваш e-mail']").send_keys(user.result['email'])
     driver.find_element(By.XPATH, "//input[@placeholder='Ваш номер телефона']").send_keys(user.result['phone'])
-    driver.find_element(By.XPATH, "// button[text() = 'Далее']").click()
+    driver.find_element(By.XPATH, "//button[text() = 'Далее']").click()
 
 
 @pytest.mark.parametrize('email, password', [
