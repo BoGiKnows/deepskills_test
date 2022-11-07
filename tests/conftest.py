@@ -18,9 +18,14 @@ def get_user_generator():
 
 
 @pytest.fixture
+def autosetter():
+    pass
+
+
+@pytest.fixture
 def get_chrome_options():
     options = webdriver.ChromeOptions()
-    options.add_argument('chrome')  # Change to --headless if you don't need UI
+    options.add_argument('--headless')  # Change to --headless if you don't need UI
     options.add_argument('--start-maximized')
     return options
 
@@ -36,6 +41,8 @@ def get_webdriver(get_chrome_options):
 def setup(request, get_webdriver):
     driver = get_webdriver
     url = 'https://stage.deepskills.ru/'
+    if request.cls is not None:
+        request.cls.driver = driver
     driver.get(url)
     yield driver
     driver.quit()

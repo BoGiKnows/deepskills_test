@@ -42,6 +42,14 @@ class User(BuilderBaseClass):
         self.result['phone'] = phone
         return self
 
+    def make_visitor(self):
+        visitor = {
+            'name': self.result['name'],
+            'phone': self.result['phone'],
+            'email': self.result['email'],
+        }
+        return visitor
+
     def reset(self):
         self.set_password()
         self.set_password_confirmation()
