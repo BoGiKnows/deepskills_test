@@ -1,7 +1,6 @@
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options as chrome_options
 from webdriver_manager.chrome import ChromeDriverManager
 
 from src.generators.user import User
