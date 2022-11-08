@@ -11,6 +11,25 @@ REGISTRATION_URL = 'https://stage.deepskills.ru/auth'
 fake = Faker()
 
 
+@pytest.mark.skip('selenium not used, only requests')
+@pytest.mark.parametrize('email, password', [
+    ('dsf', '45dsfsdf@#4334534543'),
+    (fake.email(), '23'),
+    (fake.email(), ''),
+    ('', '45dsfsdf@#4334534543'),
+    ('dsfsdf.ru', '45dsfsdf@#4334534543')
+
+])
+def test_registration(email, password, get_user_generator):
+    user = get_user_generator
+    user.set_email(email)
+    user.set_password(password).set_password_confirmation()
+    visitor = user.make_visitor()
+    vis_req = requests.post(url=VISITOR_URL, json=visitor)
+    user_req = requests.post(url=REGISTRATION_URL, json=user.result)
+    assert user_req.status_code != 200, 'Status code is not what we expected'
+
+
 def test_registration_positive(get_user_generator, setup):
     user = get_user_generator
     visitor = {
@@ -66,25 +85,6 @@ def test_registration_negative(email, password, get_user_generator, setup):
             pass
 
 
-@pytest.mark.skip('selenium not used, only requests')
-@pytest.mark.parametrize('email, password', [
-    ('dsf', '45dsfsdf@#4334534543'),
-    (fake.email(), '23'),
-    (fake.email(), ''),
-    ('', '45dsfsdf@#4334534543'),
-    ('dsfsdf.ru', '45dsfsdf@#4334534543')
-
-])
-def test_registration(email, password, get_user_generator):
-    user = get_user_generator
-    user.set_email(email)
-    user.set_password(password).set_password_confirmation()
-    visitor = user.make_visitor()
-    vis_req = requests.post(url=VISITOR_URL, json=visitor)
-    user_req = requests.post(url=REGISTRATION_URL, json=user.result)
-    assert user_req.status_code != 200, 'Status code is not what we expected'
-
-
 @pytest.mark.parametrize('name', [
     'asfdas123412#$#$',
     ' Oleg',
@@ -95,13 +95,10 @@ def test_registration(email, password, get_user_generator):
     'a',
     'SELECT * FROM USERS;',
     '<script>alert("I hacked this!")</script>',
-    '23123123123',
 ])
 def test_name_positive(name, get_user_generator, setup):
     user = get_user_generator
     user.set_name(name)
-    visitor = user.make_visitor()
-    driver = setup
     driver = setup
     driver.find_element(By.XPATH, "//input[@placeholder='Ваше имя']").send_keys(user.result['name'])
     driver.find_element(By.XPATH, "//input[@placeholder='Ваш e-mail']").send_keys(user.result['email'])
@@ -112,13 +109,12 @@ def test_name_positive(name, get_user_generator, setup):
 @pytest.mark.parametrize('name', [
     ' ',
     '\n',
-    'a' * 10000,
+    'a' * 1000,
+    '23123123123',
 ])
 def test_name_negative(name, get_user_generator, setup):
     user = get_user_generator
     user.set_name(name)
-    visitor = user.make_visitor()
-    driver = setup
     driver = setup
     driver.find_element(By.XPATH, "//input[@placeholder='Ваше имя']").send_keys(user.result['name'])
     driver.find_element(By.XPATH, "//input[@placeholder='Ваш e-mail']").send_keys(user.result['email'])
@@ -128,3 +124,35 @@ def test_name_negative(name, get_user_generator, setup):
         raise ValueError('Warning! Website accepted invalid data')
     except ElementClickInterceptedException:
         pass
+
+
+fake_email = fake.email()
+@pytest.mark.parametrize('email', [
+    'asfdas123412#$#$' + fake_email,
+    'Ol eg' + fake_email,
+    ' ',
+    fake_email + r'\n',
+    fake_email + r'\r',
+    '\n',
+    'a',
+    'SELECT * FROM USERS;',
+    '',
+    'неАСКИ@example.ru'
+    '<script>alert("I hacked this!")</script>',
+    'a' * 1000 + fake_email,
+])
+def test_email_negative(email, get_user_generator, setup):
+    user = get_user_generator
+    user.set_email(email)
+    print(user.result['email'])
+    driver = setup
+    driver.find_element(By.XPATH, "//input[@placeholder='Ваше имя']").send_keys(user.result['name'])
+    driver.find_element(By.XPATH, "//input[@placeholder='Ваш e-mail']").send_keys(user.result['email'])
+    driver.find_element(By.XPATH, "//input[@placeholder='Ваш номер телефона']").send_keys(user.result['phone'])
+    try:
+        driver.find_element(By.XPATH, "//button[text()='Далее']").click()
+        raise ValueError('Warning! Website accepted invalid data')
+    except ElementClickInterceptedException:
+        pass
+
+

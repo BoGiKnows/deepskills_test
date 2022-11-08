@@ -1,7 +1,6 @@
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options as chrome_options
 from webdriver_manager.chrome import ChromeDriverManager
 
 from src.generators.user import User
@@ -25,7 +24,7 @@ def autosetter():
 @pytest.fixture
 def get_chrome_options():
     options = webdriver.ChromeOptions()
-    options.add_argument('--headless')  # Change to --headless if you don't need UI
+    options.add_argument('--headless')
     options.add_argument('--start-maximized')
     return options
 
